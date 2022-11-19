@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "394569090460",
+    "project_id": "csw4010-taxishare",
+    "storage_bucket": "csw4010-taxishare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394569090460:android:2154387c9c240edbec3459",
+        "android_client_info": {
+          "package_name": "com.example.prj1114"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "394569090460-dg155pvn6gfa6tvs208sp5tfg3f4k6s5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.prj1114",
+            "certificate_hash": "be560a538a5c37db5712d3ee2ad63477cafbe066"
+          }
+        },
+        {
+          "client_id": "394569090460-2034endj4rqmkn7r5atkcqtiiah9iatc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZn8unv_mKVRa92Oh9e4jYBE4k906eg04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "394569090460-2034endj4rqmkn7r5atkcqtiiah9iatc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
