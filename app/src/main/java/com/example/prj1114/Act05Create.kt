@@ -1,44 +1,123 @@
 package com.example.prj1114
 
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
+import android.view.View
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import com.example.prj1114.AddressActivity.Companion.ADDRESS_REQUEST_CODE
+import kotlinx.android.synthetic.main.act6_article.*
+import kotlinx.android.synthetic.main.activity_act05_create.*
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
 
-class Act05Create : Activity(){
+class Act05Create : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act5_create)
+        setContentView(R.layout.activity_act05_create)
+        // access the items of the list
+        val hours = resources.getStringArray(R.array.Hours)
+        val minutes = resources.getStringArray(R.array.Minutes)
+        val ampm = resources.getStringArray(R.array.AmPm)
 
-        var btn:Button
-        btn = findViewById(R.id.btnCreate)
+        // access the spinner
+        val h_spinner = findViewById<Spinner>(R.id.hourSpinner)
+        val m_spinner = findViewById<Spinner>(R.id.minuteSpinner)
+        val ampm_spinner = findViewById<Spinner>(R.id.amPmSpinner)
 
-        btn.setOnClickListener {
-            //createTeam
-            var outFs : FileOutputStream = openFileOutput("file.txt", Context.MODE_PRIVATE)
-            var objectOutputStream : ObjectOutputStream = ObjectOutputStream(outFs)
 
-            var tid:Int = 1123
-            var time:Button = findViewById(R.id.btnSetTime)
-            var uMax:Int = 4
-            var sta:Int = 0
-            var pl1:Button = findViewById(R.id.btnSetPlace1)
-            var pl2:Button = findViewById(R.id.btnSetPlace2)
-            var uid:Int = 3321
+        if (h_spinner != null) {
+            val houradapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_item, hours
+            )
+            h_spinner.adapter = houradapter
 
-            var teaminfo = Team(tid, time.text.toString(), uMax, sta, pl1.text.toString(), pl2.text.toString(),uid)
+            h_spinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View, position: Int, id: Long
+                ) {
 
-            objectOutputStream.writeObject(teaminfo)
-            objectOutputStream.close()
-            outFs.close()
-            Toast.makeText(applicationContext,"create file.txt",Toast.LENGTH_SHORT).show()
+                }
 
-            var intent = Intent(this@Act05Create,Act06Article::class.java)
-            startActivity(intent)
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    // write code to perform some action
+                }
+            }
+        }
+
+
+
+        if (m_spinner != null) {
+            val minuteadapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_item, minutes
+            )
+            m_spinner.adapter = minuteadapter
+
+            m_spinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View, position: Int, id: Long
+                ) {
+
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    // write code to perform some action
+                }
+            }
+
+        }
+
+        if (ampm_spinner != null) {
+            val ampmadapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_item, ampm
+            )
+            ampm_spinner.adapter = ampmadapter
+
+            ampm_spinner.onItemSelectedListener = object :
+                AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View, position: Int, id: Long
+                ) {
+
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    // write code to perform some action
+                }
+            }
+
+        }
+
+        button4.setOnClickListener {
+            Intent(this, AddressActivity::class.java).apply {
+                startActivityForResult(this, ADDRESS_REQUEST_CODE)
+            }
         }
     }
-}
+
+    }
+
+
+
+
+//CreateButton.setOnClickListener {
+//            val intent = Intent(this, Act04List::class.java)
+//            startActivity(intent)
+//        }

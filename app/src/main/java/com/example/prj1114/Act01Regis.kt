@@ -1,40 +1,37 @@
 package com.example.prj1114
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.ViewFlipper
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.example.prj1114.databinding.ActivityAct01RegisBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
-class Act01Regis : Activity(){
+class Act01Regis : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
+    private lateinit var binding : ActivityAct01RegisBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act1_regis)
+        setContentView(R.layout.activity_act01_regis)
 
-        var btnSendMail:Button
-        var btnMailCheck:Button
-        var btnRegis:Button
-        var vFlipper:ViewFlipper
-        var linearLayout1:LinearLayout
+        auth = Firebase.auth
 
-        btnSendMail = findViewById<Button>(R.id.btnSendMail)
-        btnMailCheck = findViewById<Button>(R.id.btnMailCheck)
-        btnRegis = findViewById<Button>(R.id.btnRegis)
-        vFlipper = findViewById<ViewFlipper>(R.id.viewFlipper1)
-        linearLayout1 = findViewById<LinearLayout>(R.id.linearlayout1)
 
-        btnSendMail.setOnClickListener {
-            if(linearLayout1.visibility == LinearLayout.INVISIBLE){
-                linearLayout1.visibility = View.VISIBLE
-            }
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_act01_regis)
+
+        binding.introLoginButton.setOnClickListener {
+            val intent = Intent(this, Act01Login::class.java)
+            startActivity(intent)
         }
-        btnMailCheck.setOnClickListener {
-            vFlipper.showNext()
-        }
-        btnRegis.setOnClickListener {
-            var intent = Intent(this@Act01Regis,Act02Search::class.java)
+
+        binding.introJoinButton.setOnClickListener {
+            val intent = Intent(this, Act01Join::class.java)
             startActivity(intent)
         }
     }
