@@ -1,123 +1,181 @@
 package com.example.prj1114
 
-import android.annotation.TargetApi
 import android.app.Activity
-import android.content.Context
+import android.app.TimePickerDialog
 import android.content.Intent
-import android.os.Build
+import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.example.prj1114.AddressActivity.Companion.ADDRESS_REQUEST_CODE
-import kotlinx.android.synthetic.main.act6_article.*
-import kotlinx.android.synthetic.main.activity_act05_create.*
-import java.io.FileOutputStream
-import java.io.ObjectOutputStream
+import androidx.fragment.app.Fragment
+import com.example.prj1114.databinding.Act2SearchBinding
+import com.example.prj1114.databinding.Act5CreateBinding
+import com.example.prj1114.search.JusoFragment
+import com.example.prj1114.search.SearchFragment
+import com.example.prj1114.util.FirebaseUtils
+import com.example.prj1114.util.GetAddressFromLatLng
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import kotlinx.android.synthetic.main.act5_create.*
+import java.text.SimpleDateFormat
+import java.util.*
 
-class Act05Create : AppCompatActivity() {
+const val TAG = "FIRESTORE"
+
+class Act05Create : AppCompatActivity(), View.OnClickListener {
+
+    private var binding: Act5CreateBinding? = null
+
+    private var mLatitude: Double = 0.0
+    private var mLongitude: Double = 0.0
+
+    private var mLatitude2: Double = 0.0
+    private var mLongitude2: Double = 0.0
+
+
+    private var cal = Calendar.getInstance()
+
+    private lateinit var timeSetListener: TimePickerDialog.OnTimeSetListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_act05_create)
-        // access the items of the list
-        val hours = resources.getStringArray(R.array.Hours)
-        val minutes = resources.getStringArray(R.array.Minutes)
-        val ampm = resources.getStringArray(R.array.AmPm)
+        setContentView(R.layout.act5_create)
 
-        // access the spinner
-        val h_spinner = findViewById<Spinner>(R.id.hourSpinner)
-        val m_spinner = findViewById<Spinner>(R.id.minuteSpinner)
-        val ampm_spinner = findViewById<Spinner>(R.id.amPmSpinner)
+        binding = Act5CreateBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
 
 
-        if (h_spinner != null) {
-            val houradapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_item, hours
+        if (!Places.isInitialized()) {
+            Places.initialize(
+                this@Act05Create,
+                resources.getString(R.string.google_maps_api_key), Locale.KOREA
             )
-            h_spinner.adapter = houradapter
+        }
 
-            h_spinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View, position: Int, id: Long
-                ) {
 
+        timeSetListener = TimePickerDialog.OnTimeSetListener { view, hourOfDay: Int, minute: Int ->
+            cal.set(Calendar.HOUR_OF_DAY, hourOfDay) // HOUR_OF_DAY과 MINUTE은 사용자가 선택한 시와 분
+            cal.set(Calendar.MINUTE, minute)
+            updateDateInView()
+            uploadData()
+        }
+        chosen_time.setOnClickListener(this)
+        et_location.setOnClickListener(this)
+        et_location2.setOnClickListener(this)
+        btn_save.setOnClickListener(this)
+    }
+
+
+    override fun onClick(p0: View?) {
+        when (p0!!.id) {
+            R.id.chosen_time -> { // 사용자가 chosen_time을 누르면 아래 다이얼로그가 뜨도록함.
+                TimePickerDialog(
+                    this@Act05Create, timeSetListener,
+                    cal.get(Calendar.HOUR_OF_DAY),
+                    cal.get(Calendar.MINUTE), false
+                ).show()
+            }
+
+            R.id.et_location -> {
+                try {
+
+                    val fields = listOf(
+                        Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG,
+                        Place.Field.ADDRESS
+                    )
+
+                    val intent =
+                        Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                            .build(this@Act05Create)
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
+            }
 
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // write code to perform some action
+            R.id.et_location2 -> {
+                try {
+
+                    val fields = listOf(
+                        Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG,
+                        Place.Field.ADDRESS
+                    )
+
+                    val intent =
+                        Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+                            .build(this@Act05Create)
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE2)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
 
 
+    }
 
-        if (m_spinner != null) {
-            val minuteadapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_item, minutes
-            )
-            m_spinner.adapter = minuteadapter
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK){
+            if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
 
-            m_spinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View, position: Int, id: Long
-                ) {
+                val place: Place = Autocomplete.getPlaceFromIntent(data!!)
 
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // write code to perform some action
-                }
+                et_location.setText(place.address)
+                mLatitude = place.latLng!!.latitude
+                mLongitude = place.latLng!!.longitude
             }
 
-        }
+            if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE2) {
 
-        if (ampm_spinner != null) {
-            val ampmadapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_spinner_item, ampm
-            )
-            ampm_spinner.adapter = ampmadapter
+                val place2: Place = Autocomplete.getPlaceFromIntent(data!!)
 
-            ampm_spinner.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View, position: Int, id: Long
-                ) {
-
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    // write code to perform some action
-                }
-            }
-
-        }
-
-        button4.setOnClickListener {
-            Intent(this, AddressActivity::class.java).apply {
-                startActivityForResult(this, ADDRESS_REQUEST_CODE)
+                et_location2.setText(place2.address)
+                mLatitude2 = place2.latLng!!.latitude
+                mLongitude2 = place2.latLng!!.longitude
             }
         }
     }
 
+    private fun uploadData() {
+        binding!!.btnSave.setOnClickListener {
+
+
+            val hashMap = hashMapOf<String, Any>(
+                "TIME" to chosen_time.text.toString(),
+                "DEPARTURES" to et_location.text.toString(),
+                "ARRIVALS" to et_location2.text.toString(),
+
+                )
+
+
+            FirebaseUtils().createdGroup.collection("createdGroup")
+                .add(hashMap)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Added document with ID ${it.id}")
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error adding document $exception")
+                }
+        }
     }
 
 
 
 
-//CreateButton.setOnClickListener {
-//            val intent = Intent(this, Act04List::class.java)
-//            startActivity(intent)
-//        }
+    private fun updateDateInView() {
+        val myFormat = "h:mm a" // 입력되는 형식을 지정.
+        val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        chosen_time.setText(sdf.format(cal.time).toString())
+    }
+
+    companion object {
+        private const val PLACE_AUTOCOMPLETE_REQUEST_CODE = 3
+        private const val PLACE_AUTOCOMPLETE_REQUEST_CODE2 = 2
+    }
+}

@@ -2,11 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.Manifest.permission.INTERNET" />
+    <uses-permission android:name="android.Manifest.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.Manifest.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.Manifest.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.Manifest.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -14,28 +17,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Prj1114"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".AddressActivity"
-            android:exported="false">
+            android:name=".Act03Map"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".Act01Join"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".Act01Login"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -45,23 +42,10 @@
         </activity>
         <activity
             android:name=".Act01Regis"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:label="@string/act_name1" />
         <activity
             android:name=".Act02Search"
             android:label="@string/act_name2" />
-        <activity
-            android:name=".Act03Map"
-            android:label="@string/act_name3" />
         <activity
             android:name=".Act04List"
             android:label="@string/act_name4" />
@@ -69,8 +53,12 @@
             android:name=".Act05Create"
             android:label="@string/act_name5" />
         <activity
-            android:name=".Act06Article"
+            android:name=".Act06Detail"
             android:label="@string/act_name6" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_api_key" />
     </application>
 
 </manifest>

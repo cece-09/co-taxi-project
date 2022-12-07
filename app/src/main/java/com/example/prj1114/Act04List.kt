@@ -3,33 +3,71 @@ package com.example.prj1114
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import com.google.firebase.auth.FirebaseAuth
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_act04_list.*
+import kotlinx.android.synthetic.main.act4_list.*
+import kotlinx.android.synthetic.main.item_group.view.*
 
 class Act04List : Activity(){
-
-
-    private lateinit var auth : FirebaseAuth
-    val db = FirebaseFirestore.getInstance()  // firestore 객체 얻기.
-
+    var firestore : FirebaseFirestore? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_act04_list)
+        setContentView(R.layout.act4_list)
 
-        val db = Firebase.firestore // Cloud Firestore의 인스턴스를 초기화.
+        firestore = FirebaseFirestore.getInstance()
 
-        auth = FirebaseAuth.getInstance()
+        groups_recyclerview.adapter = RecyclerViewAdapter()
+        groups_recyclerview.layoutManager = LinearLayoutManager(this)
 
-        // 현재 사용자의 uid를 넘겨준다.
-        goToCreateButton.setOnClickListener {
-            val intent = Intent(this, Act05Create::class.java)
-            intent.putExtra("uid", auth.currentUser?.uid)
+
+        listToCreateFloatingActionButton.setOnClickListener {
+            val intent = Intent(this@Act04List, Act05Create::class.java)
+
             startActivity(intent)
+        }
+    }
+    inner class RecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+        var createdGroup : ArrayList<EachGroup> = arrayListOf()
+
+        init {
+            firestore?.collection("createdGroup")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+
+                createdGroup.clear()
+
+                for (snapshot in querySnapshot!!.documents) {
+                    var item_group = snapshot.toObject(EachGroup::class.java)
+                    createdGroup.add(item_group!!)
+                }
+                notifyDataSetChanged()
+            }
+        }
+
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            var view = LayoutInflater.from(parent.context).inflate(R.layout.item_group, parent, false)
+            return ViewHolder(view)
+        }
+
+        inner class ViewHolder(view: android.view.View) : RecyclerView.ViewHolder(view) {
+        }
+
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            var viewHolder = (holder as ViewHolder).itemView
+
+            viewHolder.TIME.text = createdGroup[position].TIME
+            viewHolder.DEPARTURES.text = createdGroup[position].DEPARTURES
+            viewHolder.ARRIVALS.text = createdGroup[position].ARRIVALS
+        }
+
+
+        override fun getItemCount(): Int {
+            return createdGroup.size
         }
     }
 }

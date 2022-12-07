@@ -1,29 +1,32 @@
 package com.example.prj1114
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import androidx.fragment.app.Fragment
+import com.example.prj1114.detail.ChatFragment
+import com.example.prj1114.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    lateinit var button1:Button
-    lateinit var button2:Button
-    lateinit var button3:Button
+    private lateinit var binding:ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        button1 = findViewById(R.id.button1)
-        button2 = findViewById(R.id.button2)
-        button3 = findViewById(R.id.button3)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        button1.setOnClickListener {
-//            var intent = Intent(applicationContext,Act01Regis::class.java)
-            var intent = Intent(this@MainActivity,Act01Regis::class.java)
-            startActivity(intent)
-        }
-        button2.setOnClickListener {
-            var intent = Intent(this@MainActivity,Act02Search::class.java)
-            startActivity(intent)
-        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout_frame, MainFragment())
+            .commit()
+    }
+
+    fun replaceFragment(dest:Int){
+        val destination = arrayListOf<Fragment>(MainFragment(),ChatFragment())
+        val bundle = Bundle()
+        bundle.putString("visited","Y")
+        destination[dest].arguments = bundle
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout_frame, destination[dest])
+            .commit()
     }
 }

@@ -1,5 +1,21 @@
 <resources>
-    <string name="app_name">Prj1114</string>
+    <string name="app_name">prj1114</string>
+
+
+    <string name="google_maps_api_key">AIzaSyBJNrHzXpIXiN-Me0lLPJVEinB2LFGwGmw</string>
+
+
+    <string name="edit_text_hint_date">출발 시간</string>
+    <string name="edit_text_hint_location">출발지</string>
+    <string name="edit_text_hint_location2">도착지</string>
+    <string name="btn_text_save">새 그룹 생성</string>
+
+    <string name="note_text_no_places_found_yet">모집중인 그룹이 존재하지 않습니다.</string>
+    <string name="image_content_description">image</string>
+
+    <string name="btn_text_view_on_map">VIEW ON MAP</string>
+    <string name="add_place_select_current_location_text">SELECT CURRENT LOCATION</string>
+
     <string name="strBtn1">regis</string>
     <string name="strBtn3">create</string>
     <string name="act_name1">Act01Regis</string>
@@ -18,8 +34,8 @@
     <string name="strBtnRegis">register</string>
     <string name="btnSetTime">HH:MM PM</string>
     <string name="btnGPS">current_location</string>
-    <string name="btnSetPlace1">sogang</string>
-    <string name="btnSetPlace2">anywhere</string>
+    <string name="btnSetPlace1">departure point</string>
+    <string name="btnSetPlace2">arrival point</string>
     <string name="btnSearch">Search</string>
     <string name="btnCreate">Create</string>
     <string name="btnMap1">replace_item1</string>
@@ -34,33 +50,6 @@
     <string name="textep1">area11</string>
     <string name="textep2">area21</string>
     <string name="textep3">area31</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="teamId">aaa</string>
 
-    <string-array name="Hours">
-        <item>01</item>
-        <item>02</item>
-        <item>03</item>
-        <item>04</item>
-        <item>05</item>
-        <item>06</item>
-        <item>07</item>
-        <item>08</item>
-        <item>09</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-    </string-array>
-
-    <string-array name="Minutes">
-        <item>00</item>
-        <item>15</item>
-        <item>30</item>
-        <item>45</item>
-    </string-array>
-
-    <string-array name="AmPm">
-        <item>AM</item>
-        <item>PM</item>
-    </string-array>
 </resources>
