@@ -3,6 +3,7 @@ package com.example.prj1114
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.example.prj1114.common.*
 import com.example.prj1114.databinding.Act2SearchBinding
@@ -19,7 +20,7 @@ class Act02Search : AppCompatActivity(){
         val view = binding.root
         setContentView(view)
 
-        openSearchFragment()
+        openMapFragment()
     }
 
     fun openSearchFragment() {
@@ -37,6 +38,13 @@ class Act02Search : AppCompatActivity(){
     fun openListFragment(){
         supportFragmentManager.beginTransaction()
             .replace(R.id.layout_frame, ListFragment())
+            .commit()
+    }
+
+    fun openMapFragment(){
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.layout_frame, Act03Map())
             .commit()
     }
 
