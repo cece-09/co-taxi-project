@@ -12,11 +12,16 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil.setContentView
+import androidx.fragment.app.Fragment
 import com.example.easywaylocation.EasyWayLocation
 import com.example.easywaylocation.Listener
 import com.example.prj1114.databinding.ActivityMapBinding
@@ -36,10 +41,11 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.firestore.GeoPoint
 import com.google.maps.android.SphericalUtil
+import com.navercorp.nid.NaverIdLoginSDK.applicationContext
 import org.imperiumlabs.geofirestore.callbacks.GeoQueryEventListener
 import java.util.*
 
-class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
+class Act03Map : Fragment(), OnMapReadyCallback, Listener {
 
     private lateinit var binding: ActivityMapBinding
     private var googleMap: GoogleMap? = null
@@ -57,13 +63,14 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
     private var isLocationEnabled = false
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMapBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        var rootView =  inflater.inflate(R.layout.activity_act03_map, container, false)
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         val locationRequest = LocationRequest.create().apply {
@@ -73,7 +80,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
             smallestDisplacement = 1f
         }
 
-        easyWayLocation = EasyWayLocation(this, locationRequest, false, false, this)
+        easyWayLocation = EasyWayLocation(requireContext(), locationRequest, false, false, this)
 
         locationPermissions.launch(arrayOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
@@ -85,7 +92,10 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
 
         binding.btnRequestTrip.setOnClickListener {  }
         binding.imageViewMenu.setOnClickListener { }
+
+        return rootView
     }
+
 
     val locationPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permission ->
 
@@ -112,7 +122,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
     private fun onCameraMove() {
         googleMap?.setOnCameraIdleListener {
             try {
-                val geocoder = Geocoder(this)
+                val geocoder = Geocoder(requireContext())
                 originLatLng = googleMap?.cameraPosition?.target
 
                 if (originLatLng != null) {
@@ -142,7 +152,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
             Places.initialize(applicationContext, resources.getString(R.string.google_maps_api_key), Locale.KOREA)
         }
 
-        places = Places.createClient(this)
+        places = Places.createClient(requireContext())
         instanceAutocompleteOrigin()
         instanceAutocompleteDestination()
     }
@@ -157,7 +167,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
     }
 
     private fun instanceAutocompleteOrigin() {
-        autocompleteOrigin = supportFragmentManager.findFragmentById(R.id.placesAutocompleteOrigin) as AutocompleteSupportFragment
+        autocompleteOrigin = childFragmentManager.findFragmentById(R.id.placesAutocompleteOrigin) as AutocompleteSupportFragment
         autocompleteOrigin?.setPlaceFields(
             listOf(
                 Place.Field.ID,
@@ -184,7 +194,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
     }
 
     private fun instanceAutocompleteDestination() {
-        autocompleteDestination = supportFragmentManager.findFragmentById(R.id.placesAutocompleteDestination) as AutocompleteSupportFragment
+        autocompleteDestination = childFragmentManager.findFragmentById(R.id.placesAutocompleteDestination) as AutocompleteSupportFragment
         autocompleteDestination?.setPlaceFields(
             listOf(
                 Place.Field.ID,
@@ -227,10 +237,10 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
         onCameraMove()
 
         if (ActivityCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
+                requireContext(),
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -241,7 +251,7 @@ class Act03Map : AppCompatActivity(), OnMapReadyCallback, Listener {
 
         try {
             val success = googleMap?.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(this, R.raw.style)
+                MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style)
             )
             if (!success!!) {
                 Log.d("MAPs", "No style")
